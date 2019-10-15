@@ -1,6 +1,12 @@
 <template>
   <div class="container">
-    <div v-for="film in films" :key="film.id" class="films">
+    <el-pagination
+      layout="prev, pager, next"
+      :total="total"
+      :page-size="pageSize"
+      @current-change="handleCurrentChange"
+    ></el-pagination>
+    <div v-for="film in currentFilms" :key="film.id" class="films">
       <el-card :body-style="{ padding: '0px' }">
         <img
           src="https://www.downloadwallpapers.info/preview/2015/11/10/810396_overallsite-ps3_1920x1080_h.jpg"
@@ -14,6 +20,12 @@
         </div>
       </el-card>
     </div>
+    <el-pagination
+        layout="prev, pager, next"
+        :total="total"
+        :page-size="pageSize"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
   </div>
 </template>
 
@@ -23,8 +35,34 @@ import films from "@/data/films.json";
 export default {
   data() {
     return {
-      films
+      total: 0,
+      pageSize: 10,
+      films,
+      currentFilms: []
     };
+  },
+  methods: {
+    handleCurrentChange(currentPage) {
+      this.currentFilms = this.getCurrentArray(
+        this.films,
+        this.total,
+        this.pageSize,
+        currentPage
+      );
+      // console.log(`current page: ${currentPage}`);
+    },
+    pagerInit() {
+      this.total = this.films.length;
+      this.handleCurrentChange(1);
+    },
+    getCurrentArray(array, total, pageSize, currentPage) {
+      //pagesNum = Math.ceil(total/pageSize)
+      let shift = (currentPage - 1) * pageSize;
+      return array.slice(shift, shift + pageSize);
+    }
+  },
+  mounted() {
+    this.pagerInit();
   }
 };
 </script>
